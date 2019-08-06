@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/dp_16"
+    android:layout_marginEnd="@dimen/dp_16"
+    android:layout_marginTop="@dimen/dp_8"
+    android:layout_marginBottom="@dimen/dp_8"
+    app:cardBackgroundColor="@color/c_ed"
+    app:cardCornerRadius="@dimen/dp_4">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dp_16">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_preview"
+            android:layout_width="@dimen/dp_100"
+            android:layout_height="@dimen/dp_100"
+            android:src="@mipmap/ic_launcher"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_media_play"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/iv_preview"
+            app:layout_constraintEnd_toEndOf="@+id/iv_preview"
+            app:layout_constraintTop_toTopOf="@+id/iv_preview"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_preview"
+            tools:ignore="ContentDescription"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_download"
+            android:layout_width="@dimen/dp_100"
+            android:layout_height="@dimen/dp_40"
+            android:background="@drawable/bg_btn"
+            android:text="@string/download"
+            android:textAllCaps="false"
+            android:textColor="@color/c_fff"
+            android:textSize="@dimen/sp_14"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_preview"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:gravity="start"
+            android:textColor="@color/c_333"
+            android:textSize="@dimen/sp_14"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/iv_preview"
+            tools:text="/storage/emulated/0/Pictures/ins/sadadadadsadaddada.jpg" />
+
+        <FrameLayout
+            android:id="@+id/layout_loading"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_0"
+            android:background="@color/transparent"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@+id/iv_preview"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_path">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,112 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'kotlin-kapt'
+
+def keyPropsFile = file("../keystore.properties")
+Properties keyProps = new Properties()
+keyProps.load(new FileInputStream(keyPropsFile))
+
+def verPropsFile = file("../version.properties")
+Properties verProps = new Properties()
+verProps.load(new FileInputStream(verPropsFile))
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.josephuszhou.insdownload"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode verProps['VERSION_CODE'] as int
+        versionName verProps['VERSION_NAME'].toString()
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        insdownload {
+            storeFile file(keyProps['STORE_FILE'].toString())
+            storePassword keyProps['STORE_PASSWORD'].toString()
+            keyAlias keyProps['kEY_ALIAS'].toString()
+            keyPassword keyProps['KEY_PASSWORD'].toString()
+        }
+    }
+    buildTypes {
+        debug {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            signingConfig signingConfigs.insdownload
+            debuggable true
+            zipAlignEnabled true
+            minifyEnabled true
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            signingConfig signingConfigs.insdownload
+            debuggable false
+            zipAlignEnabled true
+            minifyEnabled true   //混淆
+            shrinkResources true //移除无用的resource文件
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def apkName = verProps['NAME'].toString() + '-' + versionName
+            outputFileName = apkName + '.apk'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // androidX
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.core:core-ktx:1.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta01'
+    implementation 'androidx.cardview:cardview:1.0.0'
+
+    // unit test
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    // kotlinx coroutines
+    def coroutinesVer = "1.3.0-M2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVer"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVer"
+
+    // Glide
+    def glideVer = "4.9.0"
+    implementation "com.github.bumptech.glide:glide:$glideVer"
+    implementation "com.github.bumptech.glide:okhttp3-integration:$glideVer"
+    // annotationProcessor "com.github.bumptech.glide:compiler:$glideVer"
+    // Koltin 使用注解，代替annotationProcessor
+    kapt "com.github.bumptech.glide:compiler:$glideVer"
+
+    // GSON
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    // Retrofit
+    def retrofitVer = "2.6.0"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVer"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVer"
+    implementation "com.squareup.retrofit2:converter-scalars:$retrofitVer"
+
+    // OkHttp
+    def okhttpVer = "4.0.0"
+    implementation "com.squareup.okhttp3:okhttp:$okhttpVer"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttpVer"
+    implementation 'com.squareup.okio:okio:2.2.2'
+
+    // BRVAH
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.47-androidx'
+
+}
