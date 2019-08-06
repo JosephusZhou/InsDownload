@@ -8,5 +8,17 @@ Instagram 下载器
 
 ### 功能
 
-- 通过帖子链接获取帖子的图片和视频
-- 下载帖子图片和视频
+* 通过帖子链接获取帖子的图片和视频
+* 下载帖子图片和视频
+
+### 编译事项
+
+* 在项目根目录创建`keystore`目录，存放签名密钥
+
+* 在项目根目录创建`keystore.properties`文件，内容示例如下：
+```
+STORE_FILE=../keystore/key
+STORE_PASSWORD=######
+kEY_ALIAS=@@@@@
+KEY_PASSWORD=######
+```
