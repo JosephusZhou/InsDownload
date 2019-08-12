@@ -1,6 +1,8 @@
 package com.josephuszhou.insdownload.module.main.activity
 
 import android.Manifest
+import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -50,6 +52,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, BaseQuickAdapter.OnIt
     override fun onResume() {
         super.onResume()
         requestPermission()
+        getClipData()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -66,13 +69,31 @@ class MainActivity : BaseActivity(), View.OnClickListener, BaseQuickAdapter.OnIt
 
     private fun requestPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                PackageManager.PERMISSION_GRANTED
+            PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
-                    1
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
+                1
             )
+        }
+    }
+
+    private fun getClipData() {
+        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+        if (!clipboardManager.hasPrimaryClip())
+            return
+
+        clipboardManager.primaryClipDescription?.let {
+            if (!it.hasMimeType(MIMETYPE_TEXT_PLAIN))
+                return
+            val text = clipboardManager.primaryClip?.getItemAt(0)?.text
+            if (text != null) {
+                if (text.contains("instagram.com")) {
+                    edit_url.setText(text)
+                }
+            }
         }
     }
 
