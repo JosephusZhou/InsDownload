@@ -1,6 +1,7 @@
 package com.josephuszhou.base.activity
 
 import androidx.appcompat.app.AppCompatActivity
+import com.josephuszhou.insdownload.widget.dialog.LoadingDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -10,10 +11,22 @@ import kotlinx.coroutines.cancel
  * @date 2019-08-06
  * @desc
  */
-abstract class BaseActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+abstract class BaseActivity : AppCompatActivity(), CoroutineScope by MainScope(), LoadingDialog.DialogControl {
+
+    private var mLoadingDialog: LoadingDialog? = null
 
     override fun onDestroy() {
         super.onDestroy()
         cancel()
+    }
+
+    override fun showLoadingDialog() {
+        if (mLoadingDialog == null)
+            mLoadingDialog = LoadingDialog(this)
+        mLoadingDialog?.show()
+    }
+
+    override fun hideLoadingDialog() {
+        mLoadingDialog?.dismiss()
     }
 }

@@ -25,6 +25,7 @@ class MainPresenter(private val mainScope: CoroutineScope,
 
     // 解析 ins 帖子
     fun requestInsPost(insUrl: String) {
+        mainActivity.showLoadingDialog()
         mainScope.launch(Dispatchers.IO) {
             val urlPath = insUrl.replace("https://www.instagram.com/", "")
             val result = HttpClient.getInstance().get(urlPath)
@@ -34,11 +35,13 @@ class MainPresenter(private val mainScope: CoroutineScope,
                 result.data?.let { it1 ->
                     val insList = parseInsHtml(it1)
                     withContext(Dispatchers.Main) {
+                        mainActivity.hideLoadingDialog()
                         mainActivity.onImageListData(insList as List<InsEntity>)
                     }
                 }
             } else {
                 withContext(Dispatchers.Main) {
+                    mainActivity.hideLoadingDialog()
                     Toast.makeText(mainActivity, result.msg, Toast.LENGTH_SHORT).show()
                 }
             }
