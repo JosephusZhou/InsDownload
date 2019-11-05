@@ -3,6 +3,8 @@ package com.josephuszhou.base.network.request
 import okhttp3.ResponseBody
 import retrofit2.Call
 import com.josephuszhou.base.network.entity.ApiResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.lang.Exception
 
 /**
@@ -16,7 +18,7 @@ class GetRequest(url: String) : BaseRequest<GetRequest>(url) {
         return apiService!!.get(url, httpParams.urlParamsMap)
     }
 
-    fun executeHtml(): ApiResult<String> {
+    suspend fun executeHtml(): ApiResult<String> = withContext(Dispatchers.IO) {
         val apiResult = ApiResult<String>()
         try {
             val response = build().generateRequest().execute()
@@ -39,7 +41,7 @@ class GetRequest(url: String) : BaseRequest<GetRequest>(url) {
             apiResult.msg = e.message
         }
 
-        return apiResult
+        apiResult
     }
 
 }

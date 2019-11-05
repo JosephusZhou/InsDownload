@@ -24,32 +24,26 @@ class MainPresenter(private val mainScope: CoroutineScope,
 ) {
 
     // 解析 ins 帖子
-    fun requestInsPost(insUrl: String) {
+    fun requestInsPost(insUrl: String) = mainScope.launch(Dispatchers.Main) {
         mainActivity.showLoadingDialog()
-        mainScope.launch(Dispatchers.IO) {
-            val urlPath = insUrl.replace("https://www.instagram.com/", "")
-            val result = HttpClient.getInstance().get(urlPath)
-                .baseUrl("https://www.instagram.com/")
-                .executeHtml()
-            if (result.success) {
-                result.data?.let { it1 ->
-                    val insList = parseInsHtml(it1)
-                    withContext(Dispatchers.Main) {
-                        mainActivity.hideLoadingDialog()
-                        mainActivity.onImageListData(insList as List<InsEntity>)
-                    }
-                }
-            } else {
-                withContext(Dispatchers.Main) {
-                    mainActivity.hideLoadingDialog()
-                    Toast.makeText(mainActivity, result.msg, Toast.LENGTH_SHORT).show()
-                }
-            }
+        val urlPath = insUrl.replace("https://www.instagram.com/", "")
+        val result = HttpClient.getInstance().get(urlPath)
+            .baseUrl("https://www.instagram.com/")
+            .executeHtml()
+        if (result.success) {
+            mainActivity.hideLoadingDialog()
+            result.data?.let {
+                val insList = parseInsHtml(it)
+                mainActivity.onImageListData(insList)
+            } ?: mainActivity.onImageListData(ArrayList<InsEntity>())
+        } else {
+            mainActivity.hideLoadingDialog()
+            Toast.makeText(mainActivity, result.msg, Toast.LENGTH_SHORT).show()
         }
     }
 
     // 解析 html
-    private fun parseInsHtml(html: String): ArrayList<InsEntity> {
+    private suspend fun parseInsHtml(html: String): ArrayList<InsEntity> = withContext(Dispatchers.IO) {
         val insList = ArrayList<InsEntity>()
         val jsonReg = "<script type=\"text/javascript\">window\\._sharedData = (.*?);</script>"
         val pattern = Pattern.compile(jsonReg)
@@ -102,7 +96,7 @@ class MainPresenter(private val mainScope: CoroutineScope,
                 e.printStackTrace()
             }
         }
-        return insList
+        insList
     }
 
     // 解析单张图片的数据
@@ -129,36 +123,22 @@ class MainPresenter(private val mainScope: CoroutineScope,
     }
 
     // 下载
-    fun requestDownload(url: String, name: String?, isVideo: Boolean, position: Int) {
-        mainScope.launch(Dispatchers.IO) {
-            try {
-                var savedName: String
-                if (TextUtils.isEmpty(name)) {
-                    savedName = System.currentTimeMillis().toString()
-                } else {
-                    savedName = name!!
-                }
-                val result = HttpClient.getInstance().downLoad(url)
-                    .executeDownload(mainActivity, savedName, isVideo)
-                if (result.success) {
-                    result.data?.let {
-                        withContext(Dispatchers.Main) {
-                            mainActivity.onDownloadData(it, position)
-                        }
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(mainActivity, result.msg, Toast.LENGTH_SHORT).show()
-                        mainActivity.onDownloadError(position)
-                    }
-                }
-            } catch (e: Throwable) {
-                e.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(mainActivity, e.toString(), Toast.LENGTH_SHORT).show()
-                    mainActivity.onDownloadError(position)
-                }
-            }
+    fun requestDownload(url: String, name: String?, isVideo: Boolean, position: Int) = mainScope.launch(Dispatchers.Main) {
+        var savedName: String
+        if (TextUtils.isEmpty(name)) {
+            savedName = System.currentTimeMillis().toString()
+        } else {
+            savedName = name!!
+        }
+        val result = HttpClient.getInstance().downLoad(url)
+            .executeDownload(mainActivity, savedName, isVideo)
+        if (result.success) {
+            result.data?.let {
+                mainActivity.onDownloadData(it, position)
+            } ?: mainActivity.onDownloadError(position)
+        } else {
+            Toast.makeText(mainActivity, result.msg, Toast.LENGTH_SHORT).show()
+            mainActivity.onDownloadError(position)
         }
     }
 

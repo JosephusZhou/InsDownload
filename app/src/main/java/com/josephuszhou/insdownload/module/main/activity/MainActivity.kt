@@ -149,7 +149,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, BaseQuickAdapter.OnIt
         }
     }
 
-    fun onImageListData(imageUrlList: List<InsEntity>) {
+    fun onImageListData(imageUrlList: ArrayList<InsEntity>) {
         insAdapter.setNewData(imageUrlList)
     }
 

@@ -8,6 +8,8 @@ import retrofit2.Retrofit
 import com.josephuszhou.base.network.HttpClient
 import com.josephuszhou.base.network.entity.ApiResult
 import com.josephuszhou.base.util.MediaUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
 
 /**
@@ -25,7 +27,7 @@ class DownloadRequest(url: String) : BaseRequest<DownloadRequest>(url) {
         return apiService!!.download(url)
     }
 
-    fun executeDownload(context: Context, name: String, isVideo: Boolean): ApiResult<String> {
+    suspend fun executeDownload(context: Context, name: String, isVideo: Boolean): ApiResult<String> = withContext(Dispatchers.IO) {
         val apiResult = ApiResult<String>()
         try {
             val response = build().generateRequest().execute()
@@ -60,7 +62,7 @@ class DownloadRequest(url: String) : BaseRequest<DownloadRequest>(url) {
             apiResult.msg = e.message
         }
 
-        return apiResult
+        apiResult
     }
 
 }
