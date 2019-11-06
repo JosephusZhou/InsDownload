@@ -1,10 +1,12 @@
 # InsDownload
 
-Instagram 下载器
-
-*该项目起源于小狗强子想要在手机上下载 Instagram 图片*
+Instagram 图片视频下载工具
 
 使用 Kotlin 开发，使用了协程进行异步操作
+
+另外正在尝试 JetPack 版，其中包含 DataBinding、LiveData、ViewModel 等组件
+
+[传送门](https://github.com/JosephusZhou/InsDownload/tree/jetpack)
 
 ### 功能
 
