@@ -1,12 +1,12 @@
 package com.josephuszhou.base.network
 
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
 import com.josephuszhou.base.network.request.DownloadRequest
 import com.josephuszhou.base.network.request.GetRequest
 import com.josephuszhou.base.network.util.NetUtil
 import com.josephuszhou.insdownload.BuildConfig
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 
 /**
@@ -33,7 +33,7 @@ class HttpClient private constructor() {
                     }
                 }
             }
-            return singleton!!
+            return singleton as HttpClient
         }
 
     }

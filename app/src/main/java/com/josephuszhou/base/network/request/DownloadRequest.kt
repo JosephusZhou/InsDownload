@@ -24,13 +24,15 @@ class DownloadRequest(url: String) : BaseRequest<DownloadRequest>(url) {
     }
 
     override fun generateRequest(): Call<ResponseBody> {
-        return apiService!!.download(url)
+        return apiService.download(url)
     }
 
     suspend fun executeDownload(context: Context, name: String, isVideo: Boolean): ApiResult<String> = withContext(Dispatchers.IO) {
         val apiResult = ApiResult<String>()
         try {
-            val response = build().generateRequest().execute()
+            val response = this@DownloadRequest.apply {
+                build()
+            }.generateRequest().execute()
 
             if (!response.isSuccessful) {
                 apiResult.code = response.code()

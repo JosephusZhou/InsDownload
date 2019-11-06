@@ -15,13 +15,15 @@ import java.lang.Exception
 class GetRequest(url: String) : BaseRequest<GetRequest>(url) {
 
     override fun generateRequest(): Call<ResponseBody> {
-        return apiService!!.get(url, httpParams.urlParamsMap)
+        return apiService.get(url, httpParams.urlParamsMap)
     }
 
     suspend fun executeHtml(): ApiResult<String> = withContext(Dispatchers.IO) {
         val apiResult = ApiResult<String>()
         try {
-            val response = build().generateRequest().execute()
+            val response = this@GetRequest.apply{
+                build()
+            }.generateRequest().execute()
 
             if (!response.isSuccessful) {
                 apiResult.code = response.code()

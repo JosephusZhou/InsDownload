@@ -27,9 +27,9 @@ class MainPresenter(private val mainScope: CoroutineScope,
     fun requestInsPost(insUrl: String) = mainScope.launch(Dispatchers.Main) {
         mainActivity.showLoadingDialog()
         val urlPath = insUrl.replace("https://www.instagram.com/", "")
-        val result = HttpClient.getInstance().get(urlPath)
-            .baseUrl("https://www.instagram.com/")
-            .executeHtml()
+        val result = HttpClient.getInstance().get(urlPath).apply {
+            baseUrl("https://www.instagram.com/")
+        }.executeHtml()
         if (result.success) {
             mainActivity.hideLoadingDialog()
             result.data?.let {

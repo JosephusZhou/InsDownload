@@ -21,11 +21,11 @@ import java.lang.reflect.Type
  */
 abstract class BaseRequest<R : BaseRequest<R>>(protected var url: String) {
 
-    private var baseUrl: String? = null
+    private lateinit var baseUrl: String
     protected var httpParams: HttpParams
-    private var retrofit: Retrofit? = null
-    private var okHttpClient: OkHttpClient? = null
-    protected var apiService: ApiService? = null
+    private lateinit var retrofit: Retrofit
+    private lateinit var okHttpClient: OkHttpClient
+    protected lateinit var apiService: ApiService
     private var gson: Gson
 
     init {
@@ -36,14 +36,12 @@ abstract class BaseRequest<R : BaseRequest<R>>(protected var url: String) {
             .create()
     }
 
-    fun baseUrl(baseUrl: String): R {
+    fun baseUrl(baseUrl: String) {
         this.baseUrl = baseUrl
-        return this as R
     }
 
-    fun params(httpParams: HttpParams): R {
+    fun params(httpParams: HttpParams) {
         this.httpParams = httpParams
-        return this as R
     }
 
     /**
@@ -58,20 +56,15 @@ abstract class BaseRequest<R : BaseRequest<R>>(protected var url: String) {
      */
     open fun generateRetrofit(): Retrofit.Builder {
         val retrofitBuilder = HttpClient.getInstance().getRetrofitBuilder()
-        return retrofitBuilder.baseUrl(baseUrl!!)
+        return retrofitBuilder.baseUrl(baseUrl)
     }
 
-    protected fun build(): R {
+    protected fun build() {
         val okHttpClientBuilder = generateOkHttpClient()
         val retrofitBuilder = generateRetrofit()
         okHttpClient = okHttpClientBuilder.build()
-        okHttpClient?.let {
-            retrofit = retrofitBuilder.client(it).build()
-        }
-        retrofit?.let {
-            apiService = it.create(ApiService::class.java)
-        }
-        return this as R
+        retrofit = retrofitBuilder.client(okHttpClient).build()
+        apiService = retrofit.create(ApiService::class.java)
     }
 
     protected abstract fun generateRequest(): Call<ResponseBody>
@@ -82,9 +75,11 @@ abstract class BaseRequest<R : BaseRequest<R>>(protected var url: String) {
     fun <T> execute(type: Type): ApiResult<T> {
         // 通过代理解析拿到实时运行时的真实 ApiResult 类型
         val proxy = object : CallClazzProxy<ApiResult<T>, T>(type) {}
-        val type = proxy.getIType()
+        val proxyType = proxy.getIType()
 
-        val response = build().generateRequest().execute()
+        val response = apply {
+            build()
+        }.generateRequest().execute()
         var apiResult = ApiResult<T>()
 
         if (!response.isSuccessful) {
@@ -95,7 +90,7 @@ abstract class BaseRequest<R : BaseRequest<R>>(protected var url: String) {
             body?.let {
                 val bodyString = body.string()
                 try {
-                    apiResult = gson.fromJson(bodyString, type)
+                    apiResult = gson.fromJson(bodyString, proxyType)
                 } catch (e: Exception) {
                     e.printStackTrace()
                     apiResult.msg = e.message
