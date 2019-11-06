@@ -43,7 +43,7 @@ class MainPresenter(private val mainScope: CoroutineScope,
     }
 
     // 解析 html
-    private suspend fun parseInsHtml(html: String): ArrayList<InsEntity> = withContext(Dispatchers.IO) {
+    private suspend fun parseInsHtml(html: String): ArrayList<InsEntity> = withContext(Dispatchers.Default) {
         val insList = ArrayList<InsEntity>()
         val jsonReg = "<script type=\"text/javascript\">window\\._sharedData = (.*?);</script>"
         val pattern = Pattern.compile(jsonReg)
