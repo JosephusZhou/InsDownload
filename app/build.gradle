@@ -60,6 +60,10 @@ android {
             outputFileName = apkName + '.apk'
         }
     }
+
+    dataBinding {
+        enabled true
+    }
 }
 
 dependencies {

@@ -2,14 +2,12 @@ package com.josephuszhou.insdownload.module.about
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
-import android.view.MenuItem
-import com.josephuszhou.base.activity.BaseActivity
-import com.josephuszhou.insdownload.BuildConfig
-import kotlinx.android.synthetic.main.activity_about.*
+import com.josephuszhou.base.activity.Base2Activity
+import com.josephuszhou.insdownload.R
+import com.josephuszhou.insdownload.databinding.ActivityAboutBinding
 
 
-class AboutActivity : BaseActivity() {
+class AboutActivity : Base2Activity<ActivityAboutBinding>() {
 
     companion object {
         fun start(context: Context) {
@@ -17,24 +15,12 @@ class AboutActivity : BaseActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(com.josephuszhou.insdownload.R.layout.activity_about)
+    override fun layoutId() = R.layout.activity_about
 
-        setTitle(com.josephuszhou.insdownload.R.string.about)
-        val actionBar = supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-
-        tv_version.text = String.format("v%s", BuildConfig.VERSION_NAME)
+    override fun init() {
+        setTitle(R.string.about)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                this.finish()
-                super.onOptionsItemSelected(item)
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
+    override fun goBack() = true
+
 }

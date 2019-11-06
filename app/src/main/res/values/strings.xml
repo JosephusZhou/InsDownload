@@ -8,6 +8,8 @@
 
     <string name="help">帮助</string>
     <string name="help_content">你要是还不会，那你可能不适合这个 App，卸载吧</string>
+
     <string name="about">关于</string>
+    <string name="version_format">v%s</string>
     <string name="about_content">本项目起源于\n小狗强子想要在手机上下载 Instagram 图片\n十分感谢❤iu李知恩❤给了我动力</string>
 </resources>
