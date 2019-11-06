@@ -39,13 +39,12 @@ class NetUtil {
                 val keyManagers = prepareKeyManager(bksFile, password)
                 val trustManagers = prepareTrustManager(certificates)
                 val sslContext = SSLContext.getInstance("TLS")
-                val trustManager: X509TrustManager
-                if (trustManagers != null) {
-                    trustManager = MyTrustManager(
+                val trustManager: X509TrustManager = if (trustManagers != null) {
+                    MyTrustManager(
                         chooseTrustManager(trustManagers)
                     )
                 } else {
-                    trustManager = UnSafeTrustManager()
+                    UnSafeTrustManager()
                 }
                 sslContext.init(keyManagers, arrayOf<TrustManager>(trustManager), null)
                 sslParams.sSLSocketFactory = sslContext.socketFactory

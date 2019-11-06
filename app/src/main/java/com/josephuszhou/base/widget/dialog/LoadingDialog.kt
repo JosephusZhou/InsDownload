@@ -1,4 +1,4 @@
-package com.josephuszhou.insdownload.widget.dialog
+package com.josephuszhou.base.widget.dialog
 
 import android.content.Context
 import android.graphics.drawable.ColorDrawable

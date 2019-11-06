@@ -1,7 +1,7 @@
 package com.josephuszhou.base.activity
 
 import androidx.appcompat.app.AppCompatActivity
-import com.josephuszhou.insdownload.widget.dialog.LoadingDialog
+import com.josephuszhou.base.widget.dialog.LoadingDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -27,6 +27,9 @@ abstract class BaseActivity : AppCompatActivity(), CoroutineScope by MainScope()
     }
 
     override fun hideLoadingDialog() {
-        mLoadingDialog?.dismiss()
+        mLoadingDialog?.let {
+            if (it.isShowing)
+                it.dismiss()
+        }
     }
 }

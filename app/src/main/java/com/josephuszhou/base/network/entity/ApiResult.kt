@@ -10,19 +10,17 @@ import com.google.gson.annotations.SerializedName
 class ApiResult<T> {
 
     @SerializedName("status")
-    public var code: Int? = null
+    var code: Int? = null
     @SerializedName(value = "msg", alternate = ["message"])
-    public var msg: String? = null
+    var msg: String? = null
     @SerializedName("data")
-    public var data: T? = null
+    var data: T? = null
 
-    public var success = false
+    val success: Boolean
         get() {
         code?.let {
-            return code == 1
+            return it == 1
         }
         return false
     }
-
-
 }

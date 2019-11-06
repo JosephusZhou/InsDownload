@@ -105,12 +105,13 @@ abstract class BaseRequest<R : BaseRequest<R>>(protected var url: String) {
     /**
      * 示例代码调用
      */
-    /*val httpParams = HttpParams("packtype", 4)
-    httpParams.put("lang", "cn")
-    val result = HttpClient.getInstance().get("bbq.php")
-        .baseUrl("https://a.happy.com")
-        .params(httpParams)
-        .execute<TestEntity>(TestEntity::class.java)
+    /*val httpParams = HttpParams("packtype", 4).apply {
+        put("lang", "cn")
+    }
+    val result = HttpClient.getInstance().get("bbq.php").apply {
+        baseUrl("https://a.happy.com")
+        params(httpParams)
+    }.execute<TestEntity>(TestEntity::class.java)
 
     val result1 = HttpClient.getInstance().get("1.json")
         .baseUrl("https://download.out.t")

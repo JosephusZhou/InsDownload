@@ -20,7 +20,7 @@ class ClassUtil {
             } else typeList[0]
         }
 
-        fun <T> getMethodTypes(cls: Class<T>): List<Type>? {
+        private fun <T> getMethodTypes(cls: Class<T>): List<Type>? {
             val typeOri = cls.genericSuperclass
             var needTypes: MutableList<Type>? = null
             // if Type is T
