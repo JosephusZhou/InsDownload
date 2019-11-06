@@ -4,9 +4,9 @@ Instagram 图片视频下载工具
 
 使用 Kotlin 开发，使用了协程进行异步操作
 
-另外正在尝试 JetPack 版，其中包含 DataBinding、LiveData、ViewModel 等组件
+该分支为 JetPack 版，其中包含 DataBinding、LiveData、ViewModel 等组件
 
-[传送门](https://github.com/JosephusZhou/InsDownload/tree/jetpack)
+[初始开发版本](https://github.com/JosephusZhou/InsDownload/tree/master)
 
 ### 功能
 
