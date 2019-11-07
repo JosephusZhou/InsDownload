@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -9,14 +14,14 @@
         tools:context=".module.help.HelpActivity"
         tools:ignore="UseCompoundDrawables">
 
-    <ImageView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_40"
             android:contentDescription="@null"
-            android:src="@mipmap/help"/>
+            android:src="@mipmap/help" />
 
-    <TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_16"
@@ -24,6 +29,7 @@
             android:layout_marginTop="@dimen/dp_16"
             android:textColor="@color/c_333"
             android:textSize="@dimen/sp_14"
-            android:text="@string/help_content"/>
+            android:text="@string/help_content" />
 
-</LinearLayout>
+    </LinearLayout>
+</layout>
