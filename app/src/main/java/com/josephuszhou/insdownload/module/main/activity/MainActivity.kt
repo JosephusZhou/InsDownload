@@ -6,7 +6,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Bundle
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
@@ -14,10 +13,12 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.ObservableField
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.chad.library.adapter.base.BaseQuickAdapter
-import com.josephuszhou.base.activity.BaseActivity
+import com.josephuszhou.base.activity.BaseBindingActivity
 import com.josephuszhou.insdownload.R
+import com.josephuszhou.insdownload.databinding.ActivityMainBinding
 import com.josephuszhou.insdownload.module.about.AboutActivity
 import com.josephuszhou.insdownload.module.help.HelpActivity
 import com.josephuszhou.insdownload.module.main.adapter.InsAdapter
@@ -25,7 +26,7 @@ import com.josephuszhou.insdownload.module.main.entity.InsEntity
 import com.josephuszhou.insdownload.module.main.presenter.MainPresenter
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : BaseActivity(), View.OnClickListener, BaseQuickAdapter.OnItemChildClickListener {
+class MainActivity : BaseBindingActivity<ActivityMainBinding>(), BaseQuickAdapter.OnItemChildClickListener {
 
     companion object {
         fun start(context: Context) {
@@ -34,20 +35,24 @@ class MainActivity : BaseActivity(), View.OnClickListener, BaseQuickAdapter.OnIt
     }
 
     private val mainPresenter = MainPresenter(this, this)
+
     private val insAdapter = InsAdapter()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    private var insUrl = ObservableField<String>()
 
-        btn_get.setOnClickListener(this)
-        btn_reset.setOnClickListener(this)
+    override fun layoutId() = R.layout.activity_main
+
+    override fun init() {
+        viewDataBinding.insUrl = insUrl
+        viewDataBinding.mainActivity = this
 
         recyclerview.layoutManager = LinearLayoutManager(this)
         recyclerview.setHasFixedSize(true)
         recyclerview.adapter = insAdapter
         insAdapter.onItemChildClickListener = this
     }
+
+    override fun goBack() = false
 
     override fun onResume() {
         super.onResume()
@@ -89,10 +94,8 @@ class MainActivity : BaseActivity(), View.OnClickListener, BaseQuickAdapter.OnIt
             if (!it.hasMimeType(MIMETYPE_TEXT_PLAIN))
                 return
             val text = clipboardManager.primaryClip?.getItemAt(0)?.text
-            if (text != null) {
-                if (text.contains("instagram.com")) {
-                    edit_url.setText(text)
-                }
+            if (text != null && text.contains("instagram.com")) {
+                insUrl.set(text.toString())
             }
         }
     }
@@ -102,8 +105,8 @@ class MainActivity : BaseActivity(), View.OnClickListener, BaseQuickAdapter.OnIt
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.action_help -> {
                 HelpActivity.start(this@MainActivity)
                 true
@@ -116,16 +119,15 @@ class MainActivity : BaseActivity(), View.OnClickListener, BaseQuickAdapter.OnIt
         }
     }
 
-    override fun onClick(v: View?) {
+    fun onClick(v: View?) {
         when (v?.id) {
             R.id.btn_get -> {
-                if (TextUtils.isEmpty(edit_url.text))
+                if (TextUtils.isEmpty(insUrl.get()))
                     return
-                val insUrl = edit_url.text.toString()
-                mainPresenter.requestInsPost(insUrl)
+                mainPresenter.requestInsPost(insUrl.get() as String)
             }
             R.id.btn_reset -> {
-                edit_url.setText("")
+                insUrl.set("")
             }
         }
     }
