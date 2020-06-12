@@ -1,6 +1,7 @@
 package com.josephuszhou.insdownload.module.main.activity
 
 import android.Manifest
+import android.app.Activity
 import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
@@ -28,6 +29,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : BaseActivity(), View.OnClickListener, BaseQuickAdapter.OnItemChildClickListener {
 
     companion object {
+        private const val REQUEST_CODE = 1
+
         fun start(context: Context) {
             context.startActivity(Intent(context, MainActivity::class.java))
         }
@@ -149,6 +152,16 @@ class MainActivity : BaseActivity(), View.OnClickListener, BaseQuickAdapter.OnIt
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            data?.let {
+                mainPresenter.cookies = it.getStringExtra("cookies")
+                btn_get.performClick()
+            }
+        }
+    }
+
     fun onImageListData(imageUrlList: ArrayList<InsEntity>) {
         insAdapter.setNewData(imageUrlList)
     }
@@ -167,5 +180,10 @@ class MainActivity : BaseActivity(), View.OnClickListener, BaseQuickAdapter.OnIt
             it.downloadStatus = 0
             insAdapter.notifyDataSetChanged()
         }
+    }
+
+    fun onLoginData(loginUrl: String) {
+        val insUrl = edit_url.text.toString()
+        InsLoginActivity.starForResult(this, REQUEST_CODE, loginUrl, insUrl)
     }
 }

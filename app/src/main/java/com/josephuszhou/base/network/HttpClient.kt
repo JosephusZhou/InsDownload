@@ -4,7 +4,9 @@ import com.josephuszhou.base.network.request.DownloadRequest
 import com.josephuszhou.base.network.request.GetRequest
 import com.josephuszhou.base.network.util.NetUtil
 import com.josephuszhou.insdownload.BuildConfig
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
@@ -65,6 +67,8 @@ class HttpClient private constructor() {
             logging.level = HttpLoggingInterceptor.Level.BODY
             okHttpClientBuilder.addNetworkInterceptor(logging)
         }
+
+        okHttpClientBuilder.followRedirects(false)
     }
 
     fun getOkHttpClientBuilder(): OkHttpClient.Builder {
@@ -77,6 +81,15 @@ class HttpClient private constructor() {
 
     fun getRetrofitBuilder(): Retrofit.Builder {
         return retrofitBuilder
+    }
+
+    fun setCookies(cookiesStr: String): HttpClient {
+        okHttpClientBuilder.addInterceptor(object : Interceptor {
+            override fun intercept(chain: Interceptor.Chain): Response {
+                return chain.proceed(chain.request().newBuilder().header("Cookie", cookiesStr).build())
+            }
+        })
+        return this
     }
 
     fun get(url: String): GetRequest {

@@ -6,6 +6,9 @@
     <string name="reset">重置输入</string>
     <string name="download">下载</string>
 
+    <string name="login_remind">由于 instgram 限制，请先登录获取 Cookies</string>
+    <string name="get_cookies">获取 Cookies 成功，请稍候</string>
+
     <string name="help">帮助</string>
     <string name="help_content">你要是还不会，那你可能不适合这个 App，卸载吧</string>
     <string name="about">关于</string>

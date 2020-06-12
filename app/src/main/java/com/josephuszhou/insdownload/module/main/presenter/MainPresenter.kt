@@ -1,7 +1,12 @@
 package com.josephuszhou.insdownload.module.main.presenter
 
 import android.text.TextUtils
+import android.util.Log
 import android.widget.Toast
+import com.josephuszhou.base.network.HttpClient
+import com.josephuszhou.insdownload.R
+import com.josephuszhou.insdownload.module.main.activity.MainActivity
+import com.josephuszhou.insdownload.module.main.entity.InsEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -9,9 +14,6 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import com.josephuszhou.base.network.HttpClient
-import com.josephuszhou.insdownload.module.main.activity.MainActivity
-import com.josephuszhou.insdownload.module.main.entity.InsEntity
 import java.util.regex.Pattern
 
 /**
@@ -23,11 +25,13 @@ class MainPresenter(private val mainScope: CoroutineScope,
                     private val mainActivity: MainActivity
 ) {
 
+    public var cookies: String = ""
+
     // 解析 ins 帖子
     fun requestInsPost(insUrl: String) = mainScope.launch(Dispatchers.Main) {
         mainActivity.showLoadingDialog()
         val urlPath = insUrl.replace("https://www.instagram.com/", "")
-        val result = HttpClient.getInstance().get(urlPath).apply {
+        val result = HttpClient.getInstance().setCookies(cookies).get(urlPath).apply {
             baseUrl("https://www.instagram.com/")
         }.executeHtml()
         if (result.success) {
@@ -38,23 +42,29 @@ class MainPresenter(private val mainScope: CoroutineScope,
             } ?: mainActivity.onImageListData(ArrayList<InsEntity>())
         } else {
             mainActivity.hideLoadingDialog()
-            Toast.makeText(mainActivity, result.msg, Toast.LENGTH_SHORT).show()
+            if (result.code == 302) {
+                Toast.makeText(mainActivity, R.string.login_remind, Toast.LENGTH_SHORT).show()
+                result.msg?.let {
+                    mainActivity.onLoginData(it)
+                }
+            } else {
+                Toast.makeText(mainActivity, result.msg, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     // 解析 html
     private suspend fun parseInsHtml(html: String): ArrayList<InsEntity> = withContext(Dispatchers.Default) {
         val insList = ArrayList<InsEntity>()
-        val jsonReg = "<script type=\"text/javascript\">window\\._sharedData = (.*?);</script>"
+        val jsonReg = "<script type=\"text/javascript\">window\\.__additionalDataLoaded(.*?);</script>"
         val pattern = Pattern.compile(jsonReg)
         val matcher = pattern.matcher(html)
         while (matcher.find()) {
-            val json: String = matcher.group(1)
+            var json: String = matcher.group(1)
+            json = json.substring(json.indexOf("{"))
             try {
                 val jsonObject = JSONObject(json)
-                val media = jsonObject.getJSONObject("entry_data")
-                    .getJSONArray("PostPage")
-                    .getJSONObject(0)
+                val media = jsonObject
                     .getJSONObject("graphql")
                     .getJSONObject("shortcode_media")
 

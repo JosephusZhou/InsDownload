@@ -25,9 +25,13 @@ class GetRequest(url: String) : BaseRequest<GetRequest>(url) {
                 build()
             }.generateRequest().execute()
 
-            if (!response.isSuccessful) {
+            if (!response.isSuccessful && response.code() != 200) {
                 apiResult.code = response.code()
                 apiResult.msg = response.message()
+
+                if (response.code() == 302) {
+                    apiResult.msg = response.headers()["location"]
+                }
             } else {
                 apiResult.code = 1
                 val body = response.body()
