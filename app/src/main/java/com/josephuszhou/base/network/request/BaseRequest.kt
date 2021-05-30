@@ -2,14 +2,16 @@ package com.josephuszhou.base.network.request
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.josephuszhou.base.network.HttpClient
+import com.josephuszhou.base.network.entity.ApiResult
+import com.josephuszhou.base.network.entity.HttpParams
+import com.josephuszhou.base.network.proxy.CallClazzProxy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
-import com.josephuszhou.base.network.*
-import com.josephuszhou.base.network.entity.ApiResult
-import com.josephuszhou.base.network.entity.HttpParams
-import com.josephuszhou.base.network.proxy.CallClazzProxy
 import java.lang.reflect.Modifier
 import java.lang.reflect.Type
 
@@ -72,12 +74,12 @@ abstract class BaseRequest<R : BaseRequest<R>>(protected var url: String) {
     /**
      * 处理请求结果
      */
-    fun <T> execute(type: Type): ApiResult<T> {
+    suspend fun <T> execute(type: Type): ApiResult<T>  = withContext(Dispatchers.IO) {
         // 通过代理解析拿到实时运行时的真实 ApiResult 类型
         val proxy = object : CallClazzProxy<ApiResult<T>, T>(type) {}
         val proxyType = proxy.getIType()
 
-        val response = apply {
+        val response = this@BaseRequest.apply {
             build()
         }.generateRequest().execute()
         var apiResult = ApiResult<T>()
@@ -99,7 +101,7 @@ abstract class BaseRequest<R : BaseRequest<R>>(protected var url: String) {
                 }
             }
         }
-        return apiResult
+        apiResult
     }
 
     /**
